@@ -3,12 +3,13 @@ import 'package:employee_management_app/app/providers/employee_state.dart';
 import 'package:employee_management_app/features/domain/employee_state.dart';
 import 'package:employee_management_app/features/models/country_model.dart';
 import 'package:employee_management_app/features/models/employee_model.dart';
-import 'package:employee_management_app/pages/add_employee_page.dart';
+import 'package:employee_management_app/features/employee/presentation/pages/add_employee_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../helpers/test_helpers.dart';
+import '../../../../shared/test_helpers.dart';
+
 
 class FakeGetCountries implements GetCountries {
   FakeGetCountries(this.countries);

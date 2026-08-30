@@ -1,12 +1,12 @@
 import 'package:employee_management_app/app/providers/auth_providers.dart';
 import 'package:employee_management_app/app/providers/auth_state.dart';
 import 'package:employee_management_app/features/domain/app_user.dart';
-import 'package:employee_management_app/pages/home_page.dart';
+import 'package:employee_management_app/features/home/presentation/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import '../helpers/test_helpers.dart';
+import '../../../../shared/test_helpers.dart';
 
 void main() {
   testWidgets('HomePage shows user info and handles logout', (tester) async {

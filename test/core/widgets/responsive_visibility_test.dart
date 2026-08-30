@@ -1,4 +1,4 @@
-import 'package:employee_management_app/widgets/responsive_visibility.dart';
+import 'package:employee_management_app/core/widgets/responsive_visibility.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

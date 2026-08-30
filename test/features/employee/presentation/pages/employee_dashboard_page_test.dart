@@ -1,12 +1,12 @@
 import 'package:employee_management_app/app/providers/employee_providers.dart';
 import 'package:employee_management_app/app/providers/employee_state.dart';
-import 'package:employee_management_app/pages/employee_page.dart';
+import 'package:employee_management_app/features/employee/presentation/pages/employee_dashboard_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../helpers/test_helpers.dart';
+import '../../../../shared/test_helpers.dart';
 
 void main() {
   testWidgets('EmployeeDashboardPage loads employees and renders list', (tester) async {

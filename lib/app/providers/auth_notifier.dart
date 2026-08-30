@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:employee_management_app/app/providers/auth_dependencies.dart';
+import 'package:employee_management_app/app/providers/auth_providers.dart';
 import 'package:employee_management_app/app/providers/auth_state.dart';
 import 'package:employee_management_app/core/error/failure.dart';
 import 'package:employee_management_app/features/domain/app_user.dart';

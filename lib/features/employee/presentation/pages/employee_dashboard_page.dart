@@ -1,11 +1,11 @@
 import 'package:employee_management_app/core/utils/app_snackbar.dart';
 import 'package:employee_management_app/features/models/employee_model.dart';
-import 'package:employee_management_app/widgets/responsive_layout.dart';
-import 'package:employee_management_app/widgets/responsive_visibility.dart';
+import 'package:employee_management_app/core/widgets/responsive_layout.dart';
+import 'package:employee_management_app/core/widgets/responsive_visibility.dart';
 import 'package:go_router/go_router.dart';
 import 'package:employee_management_app/app/providers/employee_providers.dart';
 import 'package:employee_management_app/app/providers/employee_state.dart';
-import 'package:employee_management_app/widgets/employee_filters.dart';
+import 'package:employee_management_app/features/employee/presentation/widgets/employee_filters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -143,52 +143,34 @@ class _EmployeeDashboardPageState extends ConsumerState<EmployeeDashboardPage> {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: _buildSearchField(state),
-        ),
-
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: SizedBox(
-            width: double.infinity,
-            child: Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              alignment: WrapAlignment.start,
-              children: [
-                _buildFilterField(
-                  controller: _nameController,
-                  label: 'Name',
-                  icon: Icons.person,
-                ),
-                _buildFilterField(
-                  controller: _emailController,
-                  label: 'Email',
-                  icon: Icons.email,
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                _buildFilterField(
-                  controller: _mobileController,
-                  label: 'Mobile',
-                  icon: Icons.phone,
-                  keyboardType: TextInputType.phone,
-                ),
-                _buildFilterField(
-                  controller: _countryController,
-                  label: 'Country',
-                  icon: Icons.public,
-                ),
-                OutlinedButton.icon(
-                  onPressed: _clearFilters,
-                  icon: const Icon(Icons.clear),
-                  label: const Text('Clear'),
-                ),
-              ],
-            ),
+          child: _DashboardSearchField(
+            state: state,
+            onSearchChanged: (value) {
+              ref.read(employeeNotifierProvider.notifier).searchById(value);
+            },
+            onClearSearch: () {
+              ref.read(employeeNotifierProvider.notifier).searchById('');
+            },
           ),
         ),
 
-        Expanded(child: _buildEmployeeResults(state)),
+        _DesktopFiltersSection(
+          nameController: _nameController,
+          emailController: _emailController,
+          mobileController: _mobileController,
+          countryController: _countryController,
+          onChanged: _updateFilters,
+          onClear: _clearFilters,
+        ),
+
+        Expanded(
+          child: _EmployeeResultsSection(
+            state: state,
+            onRefresh: () => ref.read(employeeNotifierProvider.notifier).loadEmployees(),
+            onDelete: _deleteEmployee,
+            onEdit: _editEmployee,
+          ),
+        ),
       ],
     );
   }
@@ -198,54 +180,26 @@ class _EmployeeDashboardPageState extends ConsumerState<EmployeeDashboardPage> {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-          child: _buildSearchField(state),
+          child: _DashboardSearchField(
+            state: state,
+            onSearchChanged: (value) {
+              ref.read(employeeNotifierProvider.notifier).searchById(value);
+            },
+            onClearSearch: () {
+              ref.read(employeeNotifierProvider.notifier).searchById('');
+            },
+          ),
         ),
 
-        Expanded(child: _buildEmployeeResults(state)),
+        Expanded(
+          child: _EmployeeResultsSection(
+            state: state,
+            onRefresh: () => ref.read(employeeNotifierProvider.notifier).loadEmployees(),
+            onDelete: _deleteEmployee,
+            onEdit: _editEmployee,
+          ),
+        ),
       ],
-    );
-  }
-
-  Widget _buildSearchField(EmployeeState state) {
-    return TextField(
-      decoration: InputDecoration(
-        labelText: 'Search by Employee ID',
-        hintText: 'Enter employee ID',
-        prefixIcon: const Icon(Icons.search),
-        isDense: true,
-        suffixIcon: state.searchQuery.isNotEmpty
-            ? IconButton(
-                tooltip: 'Clear search',
-                onPressed: () {
-                  ref.read(employeeNotifierProvider.notifier).searchById('');
-                },
-                icon: const Icon(Icons.clear),
-              )
-            : null,
-        border: const OutlineInputBorder(),
-      ),
-      onChanged: (value) {
-        ref.read(employeeNotifierProvider.notifier).searchById(value);
-      },
-    );
-  }
-
-  Widget _buildEmployeeResults(EmployeeState state) {
-    final employees = state.filteredEmployees;
-    if (state.isLoading && !state.hasEmployees) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    if (state.employees.isNotEmpty && employees.isEmpty) {
-      return Center(
-        child: Text('No employee found for the current search/filter.', textAlign: TextAlign.center),
-      );
-    }
-
-    return RefreshIndicator(
-      onRefresh: () {
-        return ref.read(employeeNotifierProvider.notifier).loadEmployees();
-      },
-      child: EmployeeList(employees: employees, onDelete: _deleteEmployee, onEdit: _editEmployee),
     );
   }
 
@@ -315,12 +269,125 @@ class _EmployeeDashboardPageState extends ConsumerState<EmployeeDashboardPage> {
     );
   }
 
-  Widget _buildFilterField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    TextInputType? keyboardType,
-  }) {
+}
+
+class _DashboardSearchField extends StatelessWidget {
+  const _DashboardSearchField({
+    required this.state,
+    required this.onSearchChanged,
+    required this.onClearSearch,
+  });
+
+  final EmployeeState state;
+  final ValueChanged<String> onSearchChanged;
+  final VoidCallback onClearSearch;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      decoration: InputDecoration(
+        labelText: 'Search by Employee ID',
+        hintText: 'Enter employee ID',
+        prefixIcon: const Icon(Icons.search),
+        isDense: true,
+        suffixIcon: state.searchQuery.isNotEmpty
+            ? IconButton(
+                tooltip: 'Clear search',
+                onPressed: onClearSearch,
+                icon: const Icon(Icons.clear),
+              )
+            : null,
+        border: const OutlineInputBorder(),
+      ),
+      onChanged: onSearchChanged,
+    );
+  }
+}
+
+class _DesktopFiltersSection extends StatelessWidget {
+  const _DesktopFiltersSection({
+    required this.nameController,
+    required this.emailController,
+    required this.mobileController,
+    required this.countryController,
+    required this.onChanged,
+    required this.onClear,
+  });
+
+  final TextEditingController nameController;
+  final TextEditingController emailController;
+  final TextEditingController mobileController;
+  final TextEditingController countryController;
+  final VoidCallback onChanged;
+  final VoidCallback onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      child: SizedBox(
+        width: double.infinity,
+        child: Wrap(
+          spacing: 16,
+          runSpacing: 16,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          alignment: WrapAlignment.start,
+          children: [
+            _DashboardFilterField(
+              controller: nameController,
+              label: 'Name',
+              icon: Icons.person,
+              onChanged: onChanged,
+            ),
+            _DashboardFilterField(
+              controller: emailController,
+              label: 'Email',
+              icon: Icons.email,
+              keyboardType: TextInputType.emailAddress,
+              onChanged: onChanged,
+            ),
+            _DashboardFilterField(
+              controller: mobileController,
+              label: 'Mobile',
+              icon: Icons.phone,
+              keyboardType: TextInputType.phone,
+              onChanged: onChanged,
+            ),
+            _DashboardFilterField(
+              controller: countryController,
+              label: 'Country',
+              icon: Icons.public,
+              onChanged: onChanged,
+            ),
+            OutlinedButton.icon(
+              onPressed: onClear,
+              icon: const Icon(Icons.clear),
+              label: const Text('Clear'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DashboardFilterField extends StatelessWidget {
+  const _DashboardFilterField({
+    required this.controller,
+    required this.label,
+    required this.icon,
+    required this.onChanged,
+    this.keyboardType,
+  });
+
+  final TextEditingController controller;
+  final String label;
+  final IconData icon;
+  final TextInputType? keyboardType;
+  final VoidCallback onChanged;
+
+  @override
+  Widget build(BuildContext context) {
     return SizedBox(
       width: 220,
       child: TextField(
@@ -332,7 +399,46 @@ class _EmployeeDashboardPageState extends ConsumerState<EmployeeDashboardPage> {
           border: const OutlineInputBorder(),
           isDense: true,
         ),
-        onChanged: (_) => _updateFilters(),
+        onChanged: (_) => onChanged(),
+      ),
+    );
+  }
+}
+
+class _EmployeeResultsSection extends StatelessWidget {
+  const _EmployeeResultsSection({
+    required this.state,
+    required this.onRefresh,
+    required this.onDelete,
+    required this.onEdit,
+  });
+
+  final EmployeeState state;
+  final Future<void> Function() onRefresh;
+  final ValueChanged<Employee> onDelete;
+  final ValueChanged<Employee> onEdit;
+
+  @override
+  Widget build(BuildContext context) {
+    final employees = state.filteredEmployees;
+    if (state.isLoading && !state.hasEmployees) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (state.employees.isNotEmpty && employees.isEmpty) {
+      return const Center(
+        child: Text(
+          'No employee found for the current search/filter.',
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: EmployeeList(
+        employees: employees,
+        onDelete: onDelete,
+        onEdit: onEdit,
       ),
     );
   }
