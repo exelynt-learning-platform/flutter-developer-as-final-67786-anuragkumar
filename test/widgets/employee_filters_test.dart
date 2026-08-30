@@ -19,7 +19,6 @@ void main() {
             mobileController: mobileController,
             countryController: countryController,
             onChanged: () => changedCount += 1,
-            onClear: () {},
           ),
         ),
       ),
@@ -31,29 +30,5 @@ void main() {
     expect(nameController.text, 'Alice');
     expect(emailController.text, 'alice@example.com');
     expect(changedCount, greaterThanOrEqualTo(2));
-  });
-
-  testWidgets('EmployeeFilters clear button calls onClear', (tester) async {
-    var cleared = false;
-
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: EmployeeFilters(
-            nameController: TextEditingController(),
-            emailController: TextEditingController(),
-            mobileController: TextEditingController(),
-            countryController: TextEditingController(),
-            onChanged: () {},
-            onClear: () => cleared = true,
-          ),
-        ),
-      ),
-    );
-
-    await tester.tap(find.text('Clear filters'));
-    await tester.pump();
-
-    expect(cleared, isTrue);
   });
 }
