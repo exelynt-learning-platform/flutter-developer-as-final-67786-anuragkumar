@@ -1,10 +1,10 @@
 import 'package:employee_management_app/app/providers/auth_providers.dart';
 import 'package:employee_management_app/app/providers/auth_state.dart';
-import 'package:employee_management_app/pages/login_page.dart';
+import 'package:employee_management_app/features/auth/presentation/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '../helpers/test_helpers.dart';
+import '../../../../shared/test_helpers.dart';
 void main() {
   testWidgets('LoginPage validates required fields', (tester) async {
     final fakeAuth = FakeAuthNotifier(const AuthState.unauthenticated());

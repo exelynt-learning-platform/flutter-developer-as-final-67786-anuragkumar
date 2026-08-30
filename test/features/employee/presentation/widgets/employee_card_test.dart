@@ -1,5 +1,5 @@
 import 'package:employee_management_app/features/models/employee_model.dart';
-import 'package:employee_management_app/widgets/employee_card.dart';
+import 'package:employee_management_app/features/employee/presentation/widgets/employee_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

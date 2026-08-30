@@ -83,14 +83,59 @@ class EmployeeState {
     final countryQuery = countryFilter.trim().toLowerCase();
 
     return employees.where((employee) {
-      final matchesId = idQuery.isEmpty || employee.id.toLowerCase().contains(idQuery);
-      final matchesName = nameQuery.isEmpty || employee.name.toLowerCase().contains(nameQuery);
-      final matchesEmail = emailQuery.isEmpty || employee.email.toLowerCase().contains(emailQuery);
-      final matchesMobile = mobileQuery.isEmpty || employee.mobile.toLowerCase().contains(mobileQuery);
-      final matchesCountry = countryQuery.isEmpty || employee.country.toLowerCase().contains(countryQuery);
-      return matchesId && matchesName && matchesEmail && matchesMobile && matchesCountry;
-      // return employee.id.toLowerCase().contains(idQuery);
+      if (!_matchesSearchQuery(employee, idQuery)) {
+        return false;
+      }
+      if (!_matchesNameFilter(employee, nameQuery)) {
+        return false;
+      }
+      if (!_matchesEmailFilter(employee, emailQuery)) {
+        return false;
+      }
+      if (!_matchesMobileFilter(employee, mobileQuery)) {
+        return false;
+      }
+      if (!_matchesCountryFilter(employee, countryQuery)) {
+        return false;
+      }
+
+      return true;
     }).toList();
+  }
+
+  bool _matchesSearchQuery(Employee employee, String query) {
+    if (query.isEmpty) {
+      return true;
+    }
+    return employee.id.toLowerCase().contains(query);
+  }
+
+  bool _matchesNameFilter(Employee employee, String query) {
+    if (query.isEmpty) {
+      return true;
+    }
+    return employee.name.toLowerCase().contains(query);
+  }
+
+  bool _matchesEmailFilter(Employee employee, String query) {
+    if (query.isEmpty) {
+      return true;
+    }
+    return employee.email.toLowerCase().contains(query);
+  }
+
+  bool _matchesMobileFilter(Employee employee, String query) {
+    if (query.isEmpty) {
+      return true;
+    }
+    return employee.mobile.toLowerCase().contains(query);
+  }
+
+  bool _matchesCountryFilter(Employee employee, String query) {
+    if (query.isEmpty) {
+      return true;
+    }
+    return employee.country.toLowerCase().contains(query);
   }
 
   bool get hasActiveFilters {

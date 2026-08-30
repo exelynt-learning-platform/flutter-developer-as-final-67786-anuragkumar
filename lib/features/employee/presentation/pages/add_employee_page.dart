@@ -1,6 +1,6 @@
 import 'package:employee_management_app/core/error/validators.dart';
 import 'package:employee_management_app/core/utils/app_snackbar.dart';
-import 'package:employee_management_app/widgets/app_text_field.dart';
+import 'package:employee_management_app/core/widgets/app_text_field.dart';
 import 'package:go_router/go_router.dart';
 import 'package:employee_management_app/app/providers/employee_providers.dart';
 import 'package:employee_management_app/features/models/country_model.dart';

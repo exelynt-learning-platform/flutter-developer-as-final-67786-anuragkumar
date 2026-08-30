@@ -29,10 +29,13 @@ Key folders:
 
 - `lib/app`: app shell, router, and providers
 - `lib/core`: shared concerns (theme, networking, validation, storage)
-- `lib/features`: domain/data/models/repository layers
-- `lib/pages`: app screens
-- `lib/widgets`: reusable UI widgets
-- `test`: widget, page, and domain tests
+- `lib/features`: feature-first modules (auth, home, employee) with presentation/domain/data layers
+- `lib/features/*/presentation/pages`: feature screens
+- `lib/features/*/presentation/widgets`: feature-specific reusable widgets
+- `lib/core/widgets`: app-wide reusable widgets
+- `test/features`: feature-aligned tests
+- `test/core`: shared/core widget tests
+- `test/shared`: test doubles and fixtures
 
 ## Routes
 
@@ -55,12 +58,49 @@ Before running the app, ensure:
 
 - Flutter SDK is installed and available in PATH
 - A device/emulator is available
-- Firebase project configuration files are present
+- Firebase project values are provided through `--dart-define`
 
-This repo already includes Android Firebase config and generated options:
+## Firebase Configuration (Secure Setup)
 
-- `android/app/google-services.json`
-- `lib/firebase_options.dart`
+This project initializes Firebase from environment values passed at runtime/build time.
+
+Do not commit production Firebase config files or generated options to a public repository.
+
+Required `--dart-define` values:
+
+- `FIREBASE_PROJECT_ID`
+- `FIREBASE_MESSAGING_SENDER_ID`
+- `FIREBASE_STORAGE_BUCKET` (optional)
+
+Android:
+
+- `FIREBASE_ANDROID_API_KEY`
+- `FIREBASE_ANDROID_APP_ID`
+
+Web/Windows:
+
+- `FIREBASE_WEB_API_KEY` and `FIREBASE_WINDOWS_API_KEY`
+- `FIREBASE_WEB_APP_ID` and `FIREBASE_WINDOWS_APP_ID`
+- `FIREBASE_AUTH_DOMAIN`
+
+iOS/macOS:
+
+- `FIREBASE_IOS_API_KEY` and `FIREBASE_MACOS_API_KEY`
+- `FIREBASE_IOS_APP_ID` and `FIREBASE_MACOS_APP_ID`
+- `FIREBASE_IOS_BUNDLE_ID`
+
+Example run command (Android):
+
+```bash
+flutter run \
+	--dart-define=FIREBASE_PROJECT_ID=your-project-id \
+	--dart-define=FIREBASE_MESSAGING_SENDER_ID=your-sender-id \
+	--dart-define=FIREBASE_STORAGE_BUCKET=your-bucket \
+	--dart-define=FIREBASE_ANDROID_API_KEY=your-android-api-key \
+	--dart-define=FIREBASE_ANDROID_APP_ID=your-android-app-id
+```
+
+Tip: keep these values in local launch/task configs or CI secret variables.
 
 ## Getting Started
 
@@ -93,7 +133,7 @@ flutter test
 Run a specific test file:
 
 ```bash
-flutter test test/pages/login_page_test.dart
+flutter test test/features/auth/presentation/pages/login_page_test.dart
 ```
 
 Current test coverage includes:
@@ -120,7 +160,7 @@ flutter pub get
 
 ## Troubleshooting
 
-- If Firebase initialization fails, verify `lib/firebase_options.dart` and platform configs are synced with your Firebase project.
+- If Firebase initialization fails, verify all required `--dart-define` keys are supplied for the platform you are running.
 - If Google sign-in fails on Android, ensure SHA keys and OAuth client IDs are configured in Firebase.
 - If tests fail after UI changes, run the specific failing test file first, then run the full suite.
 
