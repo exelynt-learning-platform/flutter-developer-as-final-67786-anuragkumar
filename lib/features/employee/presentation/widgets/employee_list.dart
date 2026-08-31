@@ -45,6 +45,7 @@ class _MobileEmployeeList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(16),
       itemCount: employees.length,
       separatorBuilder: (_, _) => const SizedBox(height: 0),
@@ -69,6 +70,7 @@ class _DesktopEmployeeTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(16),
       child: Card(
         clipBehavior: Clip.antiAlias,

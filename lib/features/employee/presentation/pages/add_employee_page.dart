@@ -33,6 +33,7 @@ class _AddEmployeePageState extends ConsumerState<AddEmployeePage> {
   bool _isSaving = false;
 
   bool _isLoadingCountries = true;
+  String? _countriesLoadError;
   List<CountryModel> _countries = [];
 
   @override
@@ -81,6 +82,7 @@ class _AddEmployeePageState extends ConsumerState<AddEmployeePage> {
       setState(() {
         _countries = countries;
         _isLoadingCountries = false;
+        _countriesLoadError = null;
         _selectedCountry = selectedCountry;
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -90,9 +92,12 @@ class _AddEmployeePageState extends ConsumerState<AddEmployeePage> {
     } catch (error) {
       if (!mounted) return;
 
+      final message = 'Unable to load countries. Please try again.';
       setState(() {
         _isLoadingCountries = false;
+        _countriesLoadError = message;
       });
+      AppSnackbar.error(message);
     }
   }
 
@@ -192,8 +197,9 @@ class _AddEmployeePageState extends ConsumerState<AddEmployeePage> {
       builder: (context, constraints) {
         const spacing = 16.0;
         const minFieldWidth = 300.0;
+        const maxFieldColumns = 3;
 
-        final columns = (constraints.maxWidth / (minFieldWidth + spacing)).floor().clamp(1, 3);
+        final columns = (constraints.maxWidth / (minFieldWidth + spacing)).floor().clamp(1, maxFieldColumns);
 
         final fieldWidth = (constraints.maxWidth - (columns - 1) * spacing) / columns;
 
@@ -219,11 +225,16 @@ class _AddEmployeePageState extends ConsumerState<AddEmployeePage> {
                 SizedBox(
                   width: fieldWidth,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       _buildCountryField(),
                       if(_isLoadingCountries)...[
                         const SizedBox(height: 8),
                         LinearProgressIndicator()
+                      ],
+                      if (_countriesLoadError != null) ...[
+                        const SizedBox(height: 8),
+                        _buildCountryLoadError(),
                       ],
                     ],
                   ),
@@ -294,6 +305,13 @@ class _AddEmployeePageState extends ConsumerState<AddEmployeePage> {
   }
 
   Widget _buildCountryField() {
+    final countryItems = _countries.map((country) {
+      return DropdownMenuItem<CountryModel>(
+        value: country,
+        child: Text(country.country, overflow: TextOverflow.ellipsis),
+      );
+    }).toList();
+
     return DropdownButtonFormField<CountryModel>(
       key: ValueKey(_selectedCountry?.id),
       initialValue: _selectedCountry,
@@ -303,25 +321,58 @@ class _AddEmployeePageState extends ConsumerState<AddEmployeePage> {
         prefixIcon: Icon(Icons.public),
         border: OutlineInputBorder(),
         isDense: true,
+        helperText: _countriesLoadError == null ? null : 'Country list is unavailable.',
       ),
-      items: _countries.map((country) {
-        return DropdownMenuItem<CountryModel>(
-          value: country,
-          child: Text(country.country, overflow: TextOverflow.ellipsis),
-        );
-      }).toList(),
-      onChanged: (country) {
-        setState(() {
-          _selectedCountry = country;
-        });
-        _updateFormValidity();
-      },
+      items: countryItems,
+      onChanged: _isLoadingCountries
+          ? null
+          : (country) {
+              setState(() {
+                _selectedCountry = country;
+              });
+              _updateFormValidity();
+            },
       validator: (value) {
         if (value == null) {
           return 'Country is required';
         }
         return null;
       },
+    );
+  }
+
+  Widget _buildCountryLoadError() {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: Theme.of(context).colorScheme.errorContainer,
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.error_outline,
+            color: Theme.of(context).colorScheme.onErrorContainer,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              _countriesLoadError ?? '',
+              style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _isLoadingCountries = true;
+                _countriesLoadError = null;
+              });
+              _loadCountries();
+            },
+            child: const Text('Retry'),
+          ),
+        ],
+      ),
     );
   }
 

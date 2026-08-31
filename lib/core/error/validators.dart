@@ -4,7 +4,11 @@ const emailRegex = r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z
   String? nameValidator(String? value, String label, {bool isRequired = false, int max = 50}) {
     final name = value?.trim() ?? '';
 
-    if (name.isEmpty && isRequired) return '$label is required';
+    if (name.isEmpty) {
+      if (isRequired) return '$label is required';
+      return null;
+    }
+
     if (name.length < 2) return '$label must be at least 2 characters';
     if (name.length > max) return '$label must not exceed $max characters';
     final regex = RegExp(nameRegex);

@@ -17,7 +17,10 @@ class EmployeeManagementApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Employee Management',
       debugShowCheckedModeBanner: false,
-      scaffoldMessengerKey: scaffoldMessengerKey,
+      builder: (context, child) {
+        AppSnackbar.bindContext(context);
+        return child ?? const SizedBox.shrink();
+      },
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: themeMode,

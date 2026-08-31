@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
-
-final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
-
 abstract final class AppSnackbar {
+  static BuildContext? _context;
+
+  static void bindContext(BuildContext context) {
+    _context = context;
+  }
+
   static void show(
     String message, {
     Duration duration = const Duration(seconds: 3),
@@ -20,8 +23,10 @@ abstract final class AppSnackbar {
   }
 
   static void _show(SnackBar snackBar) {
-    final messenger = scaffoldMessengerKey.currentState;
+    final context = _context;
+    if (context == null) return;
 
+    final messenger = ScaffoldMessenger.maybeOf(context);
     if (messenger == null) return;
 
     messenger..hideCurrentSnackBar()..showSnackBar(snackBar);

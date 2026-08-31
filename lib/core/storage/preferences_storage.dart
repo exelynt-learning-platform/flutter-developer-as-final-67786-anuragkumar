@@ -43,3 +43,36 @@ class PreferencesStorageImpl implements PreferencesStorage {
     return _preferences.remove(key);
   }
 }
+
+class InMemoryPreferencesStorage implements PreferencesStorage {
+  InMemoryPreferencesStorage();
+
+  final Map<String, Object> _store = <String, Object>{};
+
+  @override
+  Future<String?> getString(String key) async {
+    final value = _store[key];
+    return value is String ? value : null;
+  }
+
+  @override
+  Future<void> setString(String key, String value) async {
+    _store[key] = value;
+  }
+
+  @override
+  Future<bool?> getBool(String key) async {
+    final value = _store[key];
+    return value is bool ? value : null;
+  }
+
+  @override
+  Future<void> setBool(String key, bool value) async {
+    _store[key] = value;
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    _store.remove(key);
+  }
+}
