@@ -20,31 +20,27 @@ abstract final class AppTheme {
     ),
   );
 
-  static ThemeData get light {
-    return ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.light,
-      colorSchemeSeed: Colors.indigo,
-      inputDecorationTheme: inputDecorationTheme,
-      dialogTheme: dialogTheme,
-      cardTheme: const CardThemeData(
-        color: Colors.white,
-      ),
-      chipTheme: chipTheme,
-    );
-  }
+  static final ThemeData light = ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.light,
+    colorSchemeSeed: Colors.indigo,
+    inputDecorationTheme: inputDecorationTheme,
+    dialogTheme: dialogTheme,
+    cardTheme: const CardThemeData(
+      color: Colors.white,
+    ),
+    chipTheme: chipTheme,
+  );
 
-  static ThemeData get dark {
-    return ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.dark,
-      colorSchemeSeed: Colors.indigo,
-      inputDecorationTheme: inputDecorationTheme,
-      dialogTheme: dialogTheme,
-      cardTheme: const CardThemeData(
-        color: Colors.black,
-      ),
-      chipTheme: chipTheme,
-    );
-  }
+  static final ThemeData dark = ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    colorSchemeSeed: Colors.indigo,
+    inputDecorationTheme: inputDecorationTheme,
+    dialogTheme: dialogTheme,
+    cardTheme: const CardThemeData(
+      color: Colors.black,
+    ),
+    chipTheme: chipTheme,
+  );
 }

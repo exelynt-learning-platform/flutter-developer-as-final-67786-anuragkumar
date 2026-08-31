@@ -14,8 +14,19 @@ final apiClientProvider = Provider<ApiClient>((ref) {
   return ApiClient();
 });
 
+final preferencesStorageFactoryProvider = Provider<PreferencesStorage Function()>((ref) {
+  return () {
+    try {
+      return PreferencesStorageImpl(SharedPreferencesAsync());
+    } catch (_) {
+      return InMemoryPreferencesStorage();
+    }
+  };
+});
+
 final preferencesStorageProvider = Provider<PreferencesStorage>((ref) {
-  return PreferencesStorageImpl(SharedPreferencesAsync(),);
+  final createStorage = ref.watch(preferencesStorageFactoryProvider);
+  return createStorage();
 });
 
 final firebaseAuthProvider = Provider<FirebaseAuth>((ref) {

@@ -17,13 +17,23 @@ class HomePage extends ConsumerWidget {
         title: const Text('Employee Management'),
         actionsPadding: EdgeInsets.only(right: 8),
         actions: [
-          IconButton(
-            tooltip: 'Logout',
-            onPressed: authState.isLoading ? null  : () {
-              ref.read(authNotifierProvider.notifier).logout();
-            },
-            icon: const Icon(Icons.logout),
-          ),
+          if (authState.isLoading)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          else
+            IconButton(
+              tooltip: 'Logout',
+              onPressed: () {
+                ref.read(authNotifierProvider.notifier).logout();
+              },
+              icon: const Icon(Icons.logout),
+            ),
         ],
       ),
       body: Center(

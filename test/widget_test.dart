@@ -23,7 +23,7 @@ void main() {
 
       expect(find.byType(Scaffold), findsOneWidget);
       expect(find.text('Employee Management'), findsOneWidget);
-      expect(find.text('Login'), findsOneWidget);
+      expect(find.text('Continue with Google'), findsOneWidget);
     },
   );
 }
