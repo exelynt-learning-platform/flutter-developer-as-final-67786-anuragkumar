@@ -4,6 +4,27 @@ import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatf
 class FirebaseEnvOptions {
   const FirebaseEnvOptions._();
 
+  static const _projectId = String.fromEnvironment('FIREBASE_PROJECT_ID');
+  static const _messagingSenderId = String.fromEnvironment('FIREBASE_MESSAGING_SENDER_ID');
+  static const _storageBucket = String.fromEnvironment('FIREBASE_STORAGE_BUCKET');
+  static const _authDomain = String.fromEnvironment('FIREBASE_AUTH_DOMAIN');
+
+  static const _webApiKey = String.fromEnvironment('FIREBASE_WEB_API_KEY');
+  static const _webAppId = String.fromEnvironment('FIREBASE_WEB_APP_ID');
+
+  static const _androidApiKey = String.fromEnvironment('FIREBASE_ANDROID_API_KEY');
+  static const _androidAppId = String.fromEnvironment('FIREBASE_ANDROID_APP_ID');
+
+  static const _iosApiKey = String.fromEnvironment('FIREBASE_IOS_API_KEY');
+  static const _iosAppId = String.fromEnvironment('FIREBASE_IOS_APP_ID');
+  static const _iosBundleId = String.fromEnvironment('FIREBASE_IOS_BUNDLE_ID');
+
+  static const _macosApiKey = String.fromEnvironment('FIREBASE_MACOS_API_KEY');
+  static const _macosAppId = String.fromEnvironment('FIREBASE_MACOS_APP_ID');
+
+  static const _windowsApiKey = String.fromEnvironment('FIREBASE_WINDOWS_API_KEY');
+  static const _windowsAppId = String.fromEnvironment('FIREBASE_WINDOWS_APP_ID');
+
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
       return web;
@@ -30,51 +51,65 @@ class FirebaseEnvOptions {
   }
 
   static FirebaseOptions get web => FirebaseOptions(
-        apiKey: _required('FIREBASE_WEB_API_KEY'),
-        appId: _required('FIREBASE_WEB_APP_ID'),
-        messagingSenderId: _required('FIREBASE_MESSAGING_SENDER_ID'),
-        projectId: _required('FIREBASE_PROJECT_ID'),
-        authDomain: _required('FIREBASE_AUTH_DOMAIN'),
-        storageBucket: _optional('FIREBASE_STORAGE_BUCKET'),
+        apiKey: _requiredValue(_webApiKey, 'FIREBASE_WEB_API_KEY'),
+        appId: _requiredValue(_webAppId, 'FIREBASE_WEB_APP_ID'),
+        messagingSenderId: _requiredValue(
+          _messagingSenderId,
+          'FIREBASE_MESSAGING_SENDER_ID',
+        ),
+        projectId: _requiredValue(_projectId, 'FIREBASE_PROJECT_ID'),
+        authDomain: _requiredValue(_authDomain, 'FIREBASE_AUTH_DOMAIN'),
+        storageBucket: _optionalValue(_storageBucket),
       );
 
   static FirebaseOptions get android => FirebaseOptions(
-        apiKey: _required('FIREBASE_ANDROID_API_KEY'),
-        appId: _required('FIREBASE_ANDROID_APP_ID'),
-        messagingSenderId: _required('FIREBASE_MESSAGING_SENDER_ID'),
-        projectId: _required('FIREBASE_PROJECT_ID'),
-        storageBucket: _optional('FIREBASE_STORAGE_BUCKET'),
+        apiKey: _requiredValue(_androidApiKey, 'FIREBASE_ANDROID_API_KEY'),
+        appId: _requiredValue(_androidAppId, 'FIREBASE_ANDROID_APP_ID'),
+        messagingSenderId: _requiredValue(
+          _messagingSenderId,
+          'FIREBASE_MESSAGING_SENDER_ID',
+        ),
+        projectId: _requiredValue(_projectId, 'FIREBASE_PROJECT_ID'),
+        storageBucket: _optionalValue(_storageBucket),
       );
 
   static FirebaseOptions get ios => FirebaseOptions(
-        apiKey: _required('FIREBASE_IOS_API_KEY'),
-        appId: _required('FIREBASE_IOS_APP_ID'),
-        messagingSenderId: _required('FIREBASE_MESSAGING_SENDER_ID'),
-        projectId: _required('FIREBASE_PROJECT_ID'),
-        storageBucket: _optional('FIREBASE_STORAGE_BUCKET'),
-        iosBundleId: _required('FIREBASE_IOS_BUNDLE_ID'),
+        apiKey: _requiredValue(_iosApiKey, 'FIREBASE_IOS_API_KEY'),
+        appId: _requiredValue(_iosAppId, 'FIREBASE_IOS_APP_ID'),
+        messagingSenderId: _requiredValue(
+          _messagingSenderId,
+          'FIREBASE_MESSAGING_SENDER_ID',
+        ),
+        projectId: _requiredValue(_projectId, 'FIREBASE_PROJECT_ID'),
+        storageBucket: _optionalValue(_storageBucket),
+        iosBundleId: _requiredValue(_iosBundleId, 'FIREBASE_IOS_BUNDLE_ID'),
       );
 
   static FirebaseOptions get macos => FirebaseOptions(
-        apiKey: _required('FIREBASE_MACOS_API_KEY'),
-        appId: _required('FIREBASE_MACOS_APP_ID'),
-        messagingSenderId: _required('FIREBASE_MESSAGING_SENDER_ID'),
-        projectId: _required('FIREBASE_PROJECT_ID'),
-        storageBucket: _optional('FIREBASE_STORAGE_BUCKET'),
-        iosBundleId: _required('FIREBASE_IOS_BUNDLE_ID'),
+        apiKey: _requiredValue(_macosApiKey, 'FIREBASE_MACOS_API_KEY'),
+        appId: _requiredValue(_macosAppId, 'FIREBASE_MACOS_APP_ID'),
+        messagingSenderId: _requiredValue(
+          _messagingSenderId,
+          'FIREBASE_MESSAGING_SENDER_ID',
+        ),
+        projectId: _requiredValue(_projectId, 'FIREBASE_PROJECT_ID'),
+        storageBucket: _optionalValue(_storageBucket),
+        iosBundleId: _requiredValue(_iosBundleId, 'FIREBASE_IOS_BUNDLE_ID'),
       );
 
   static FirebaseOptions get windows => FirebaseOptions(
-        apiKey: _required('FIREBASE_WINDOWS_API_KEY'),
-        appId: _required('FIREBASE_WINDOWS_APP_ID'),
-        messagingSenderId: _required('FIREBASE_MESSAGING_SENDER_ID'),
-        projectId: _required('FIREBASE_PROJECT_ID'),
-        authDomain: _required('FIREBASE_AUTH_DOMAIN'),
-        storageBucket: _optional('FIREBASE_STORAGE_BUCKET'),
+        apiKey: _requiredValue(_windowsApiKey, 'FIREBASE_WINDOWS_API_KEY'),
+        appId: _requiredValue(_windowsAppId, 'FIREBASE_WINDOWS_APP_ID'),
+        messagingSenderId: _requiredValue(
+          _messagingSenderId,
+          'FIREBASE_MESSAGING_SENDER_ID',
+        ),
+        projectId: _requiredValue(_projectId, 'FIREBASE_PROJECT_ID'),
+        authDomain: _requiredValue(_authDomain, 'FIREBASE_AUTH_DOMAIN'),
+        storageBucket: _optionalValue(_storageBucket),
       );
 
-  static String _required(String key) {
-    final value = String.fromEnvironment(key);
+  static String _requiredValue(String value, String key) {
     if (value.isEmpty) {
       throw UnsupportedError(
         'Missing required --dart-define value: $key',
@@ -83,8 +118,7 @@ class FirebaseEnvOptions {
     return value;
   }
 
-  static String? _optional(String key) {
-    final value = String.fromEnvironment(key);
+  static String? _optionalValue(String value) {
     if (value.isEmpty) {
       return null;
     }
