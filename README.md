@@ -102,6 +102,43 @@ flutter run \
 
 Tip: keep these values in local launch/task configs or CI secret variables.
 
+Recommended local workflow (`--dart-define-from-file`):
+
+- Copy `env/firebase.web.example.json` to `env/firebase.web.local.json`
+- Copy `env/firebase.android.example.json` to `env/firebase.android.local.json`
+- Fill in values in your local files
+- Run with:
+
+```bash
+flutter run -d chrome --dart-define-from-file=env/firebase.web.local.json
+```
+
+```bash
+flutter run --dart-define-from-file=env/firebase.android.local.json
+```
+
+The `.local.json` files are ignored by git to avoid committing secrets.
+
+VS Code default run/debug support:
+
+- Workspace setting `.vscode/settings.json` includes:
+	- `dart.flutterRunAdditionalArgs` with `--dart-define-from-file=env/firebase.all.local.json`
+- This means regular Run/Debug in VS Code also receives Firebase defines automatically.
+
+Example run command (Web):
+
+```bash
+flutter run -d chrome \
+	--dart-define=FIREBASE_PROJECT_ID=your-project-id \
+	--dart-define=FIREBASE_MESSAGING_SENDER_ID=your-sender-id \
+	--dart-define=FIREBASE_STORAGE_BUCKET=your-bucket \
+	--dart-define=FIREBASE_AUTH_DOMAIN=your-project-id.firebaseapp.com \
+	--dart-define=FIREBASE_WEB_API_KEY=your-web-api-key \
+	--dart-define=FIREBASE_WEB_APP_ID=your-web-app-id
+```
+
+VS Code launch profiles are available in `.vscode/launch.json` for one-click run with local env files.
+
 ## Getting Started
 
 1. Install dependencies:
