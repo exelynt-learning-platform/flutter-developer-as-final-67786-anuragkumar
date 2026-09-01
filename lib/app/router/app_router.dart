@@ -10,12 +10,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authNotifierProvider);
+  final refreshNotifier = _RouterRefreshNotifier();
+  ref.listen(authNotifierProvider, (_, __) {
+    refreshNotifier.notify();
+  });
 
   final router = GoRouter(
     initialLocation: '/login',
+    refreshListenable: refreshNotifier,
 
     redirect: (context, state) {
+      final authState = ref.read(authNotifierProvider);
       final isAuthenticated = authState.isAuthenticated;
       final isLoginRoute = state.matchedLocation == '/login';
 
@@ -67,10 +72,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     ],
   );
 
-  ref.onDispose(router.dispose);
+  ref.onDispose(() {
+    refreshNotifier.dispose();
+    router.dispose();
+  });
 
   return router;
 });
+
+class _RouterRefreshNotifier extends ChangeNotifier {
+  void notify() => notifyListeners();
+}
 
 class NavigationErrorPage extends StatelessWidget {
   const NavigationErrorPage({required this.state, super.key});
